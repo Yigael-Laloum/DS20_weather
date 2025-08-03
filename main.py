@@ -7,7 +7,7 @@ import requests
 import json
 
 # הגדרת כותרת לאפליקציה
-st.title("ברוכים הבאים לאפליקציית הדוגמה שלי!")
+st.title("דירוג הקושי של הצום")
 
 # קבלת קלט טקסט מהמשתמש
 user_name = st.text_input("מה שמך?", "אורח/ת")
@@ -25,6 +25,11 @@ selected_number = st.slider(
 
 # הצגת המספר שנבחר
 st.write(f"בחרת את המספר: {selected_number}")
+
+if selected_number <= 4:
+    st.write("כנראה בגלל שהצום אחרי שבת היה קל יחסית")
+else:
+    st.write("בגלל שהצום אחרי שבת היה אמור להיות קל יחסית")
 
 # הוספת כפתור
 if st.button("לחץ כאן"):
