@@ -6,36 +6,35 @@ import pytz
 import requests
 import json
 
-# הגדרת כותרת לאפליקציה
-st.title("דירוג הקושי של הצום")
+# כותרת לממשק
+st.title("בדיקת מזג האוויר")
 
-# קבלת קלט טקסט מהמשתמש
-user_name = st.text_input("מה שמך?", "אורח/ת")
+# קבלת קלט מיקום מהמשתמש
+location = st.text_input("הזן את המיקום שלך (למשל, Tel Aviv):", "")
 
-# הצגת ברכה מותאמת אישית
-st.write(f"שלום, {user_name}! כיף לראות אותך כאן.")
+# הגדרת מפתח ה-API
+api_key = "053b9baa6643509be5a052798faf7f3b"
 
-# הוספת סליידר לבחירת מספר
-selected_number = st.slider(
-    "דרג את הקושי של הצום בין 1 [קל] ל-10 [קשה]",
-    min_value=1,
-    max_value=10,
-    value=5 # ערך ברירת מחדל
-)
+# הוספת כפתור להפעלת הבקשה
+if st.button("בדוק מזג אוויר"):
+    if location.strip() == "":
+        st.error("אנא הזן מיקום תקין")
+    else:
+        # הגדרת כתובת ה-URL עם יחידות ושפה
+        url = f"http://api.openweathermap.org/data/2.5/weather?q={location}&appid={api_key}&units=metric&lang=he"
 
-# הצגת המספר שנבחר
-st.write(f"בחרת את המספר: {selected_number}")
+        # שליחת בקשת GET
+        response = requests.get(url)
 
-if selected_number <= 4:
-    st.write("כנראה בגלל שהצום אחרי שבת היה קל יחסית")
-else:
-    st.write("בגלל שהצום אחרי שבת היה אמור להיות קל יחסית")
-
-# הוספת כפתור
-if st.button("אשמח להביא את הגאולה ולחסוך את הצום"):
-    st.success("כדי להביא את הגאולה עלינו להאיר את העולם בתורה ובמעשים טובים")
-
-# הוספת טקסט תחתון
-st.caption("זוהי אפליקציה פשוטה להדגמה של Streamlit.")
-
-print("Just testing Git Desktop")
+        # בדיקת התגובה
+        if response.status_code == 200:
+            data = response.json()
+            if data.get("cod") == "404":
+                st.error("העיר לא נמצאה. אנא בדוק את שם המיקום.")
+            else:
+                st.write(f"**עיר**: {data['name']}")
+                st.write(f"**תיאור**: {data['weather'][0]['description']}")
+                st.write(f"**טמפרטורה**: {data['main']['temp']:.1f}°C")
+                st.write(f"**לחות**: {data['main']['humidity']}%")
+        else:
+            st.error(f"שגיאה: קוד {response.status_code}. בדוק את מפתח ה-API או חיבור לאינטרנט.")
