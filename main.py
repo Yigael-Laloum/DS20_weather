@@ -60,9 +60,12 @@ if st.button("בדוק מזג אוויר"):
 
                 # --- Subplots אנכיים לשני המדדים (לא יחפפו) ---
                 fig = make_subplots(
-                    rows=2, cols=1,
+                    rows=2,
+                    cols=1,
                     subplot_titles=("טמפרטורה (°C)", "לחות (%)"),
-                    vertical_spacing=0.25
+                    vertical_spacing=0.25,
+                    specs=[[{"type": "domain"}],
+                           [{"type": "domain"}]]
                 )
 
                 fig.add_trace(
@@ -70,15 +73,7 @@ if st.button("בדוק מזג אוויר"):
                         mode="gauge+number",
                         value=temp if temp is not None else 0,
                         number={'suffix': " °C"},
-                        gauge={
-                            'axis': {'range': [min(0, (temp or 0) - 10), max(40, (temp or 0) + 10)]},
-                            'bar': {'color': "orange" if (temp or 0) > 30 else "blue"},
-                            'steps': [
-                                {'range': [0, 15], 'color': "lightblue"},
-                                {'range': [15, 25], 'color': "lightgreen"},
-                                {'range': [25, 40], 'color': "lightcoral"}
-                            ]
-                        }
+                        gauge={...}
                     ),
                     row=1, col=1
                 )
@@ -88,15 +83,7 @@ if st.button("בדוק מזג אוויר"):
                         mode="gauge+number",
                         value=humidity if humidity is not None else 0,
                         number={'suffix': " %"},
-                        gauge={
-                            'axis': {'range': [0, 100]},
-                            'bar': {'color': "green" if (humidity or 0) < 70 else "red"},
-                            'steps': [
-                                {'range': [0, 50], 'color': "lightyellow"},
-                                {'range': [50, 80], 'color': "lightblue"},
-                                {'range': [80, 100], 'color': "lightgray"}
-                            ]
-                        }
+                        gauge={...}
                     ),
                     row=2, col=1
                 )
