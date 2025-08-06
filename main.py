@@ -1,10 +1,7 @@
 import pandas as pd
-import seaborn as sns
 import streamlit as st
 import datetime as dt
-import pytz
 import requests
-import json
 from plotly.subplots import make_subplots
 import plotly.graph_objects as go
 
@@ -88,17 +85,15 @@ st.markdown(
 st.title("ברוכים הבאים לשירות החזאי העולמי")
 
 
-# --- פונקציה לקבלת תחזית שבועית ---
-def get_weekly_forecast(lat, lon, api_key):
+# --- פונקציה לקבלת תחזית ל-5 ימים ---
+def get_5day_forecast(location, api_key):
     """
-    מבצע קריאה ל-API של OpenWeatherMap כדי לקבל תחזית שבועית.
+    מבצע קריאה ל-API של OpenWeatherMap כדי לקבל תחזית ל-5 ימים.
     """
-    url = "https://api.openweathermap.org/data/2.5/onecall"
+    url = "https://api.openweathermap.org/data/2.5/forecast"
     params = {
-        "lat": lat,
-        "lon": lon,
+        "q": location,
         "appid": api_key,
-        "exclude": "current,minutely,hourly,alerts",
         "units": "metric",
         "lang": "he"
     }
@@ -107,7 +102,7 @@ def get_weekly_forecast(lat, lon, api_key):
         response.raise_for_status()
         return response.json()
     except requests.RequestException as e:
-        st.error(f"שגיאה בקבלת התחזית השבועית: {e}")
+        st.error(f"שגיאה בקבלת התחזית ל-5 ימים: {e}")
         return None
 
 
@@ -118,25 +113,26 @@ if st.button("לחצו כאן לבדיקת מזג אוויר"):
     if not location.strip():
         st.error("אנא הזינו מיקום תקין")
     else:
-        url = "http://api.openweathermap.org/data/2.5/weather"
-        params = {"q": location, "appid": api_key, "units": "metric", "lang": "he"}
+        # קריאה למזג אוויר נוכחי
+        url_current = "http://api.openweathermap.org/data/2.5/weather"
+        params_current = {"q": location, "appid": api_key, "units": "metric", "lang": "he"}
 
         try:
-            r = requests.get(url, params=params, timeout=10)
-            r.raise_for_status()
+            r_current = requests.get(url_current, params=params_current, timeout=10)
+            r_current.raise_for_status()
         except requests.RequestException as e:
             st.error(f"שגיאת חיבור או תגובה מה-API: {e}")
         else:
-            data = r.json()
-            if data.get("cod") == "404":
+            data_current = r_current.json()
+            if data_current.get("cod") == "404":
                 st.error("העיר לא נמצאה. אנא בדוק את שם המיקום.")
             else:
-                name = data.get("name", "—")
-                weather = data.get("weather", [{}])[0]
+                name = data_current.get("name", "—")
+                weather = data_current.get("weather", [{}])[0]
                 icon = weather.get("icon")
                 desc = weather.get("description", "")
-                temp = data.get("main", {}).get("temp")
-                humidity = data.get("main", {}).get("humidity")
+                temp = data_current.get("main", {}).get("temp")
+                humidity = data_current.get("main", {}).get("humidity")
 
                 st.write(f"**המיקום שהזנתם הוא**: {name}")
                 st.write(f"**קשה לחשוב על מיקום מדהים יותר מ-** {name}")
@@ -213,30 +209,40 @@ if st.button("לחצו כאן לבדיקת מזג אוויר"):
                 if humidity is not None and humidity > 80:
                     st.warning("💧 הלחות כעת גבוהה! ייתכן שיהיה דביק.")
 
-                # --- תחזית לשבוע הקרוב ---
-                if "coord" in data:
-                    lat = data["coord"]["lat"]
-                    lon = data["coord"]["lon"]
-                    weekly_data = get_weekly_forecast(lat, lon, api_key)
+                # --- תחזית ל-5 ימים הקרובים ---
+                forecast_data = get_5day_forecast(location, api_key)
 
-                    if weekly_data and "daily" in weekly_data:
-                        st.markdown("<hr>", unsafe_allow_html=True)
-                        st.markdown("## תחזית לשבוע הקרוב")
+                if forecast_data and "list" in forecast_data:
+                    st.markdown("<hr>", unsafe_allow_html=True)
+                    st.markdown("## תחזית ל-5 ימים הקרובים")
 
-                        daily_forecasts = weekly_data["daily"]
-                        cols = st.columns(len(daily_forecasts))
+                    daily_forecasts = {}
+                    for forecast in forecast_data['list']:
+                        # קבוצות הנתונים מגיעות כל 3 שעות
+                        # נשתמש בתאריך לסיכום הנתונים היומיים
+                        date_str = dt.datetime.fromtimestamp(forecast['dt']).strftime('%A, %d/%m')
 
-                        for i, day in enumerate(daily_forecasts):
-                            dt_object = dt.datetime.fromtimestamp(day['dt'])
-                            day_of_week = dt_object.strftime('%A')
-                            temp_min = day['temp']['min']
-                            temp_max = day['temp']['max']
-                            weather_desc = day['weather'][0]['description']
-                            icon = day['weather'][0]['icon']
+                        if date_str not in daily_forecasts:
+                            daily_forecasts[date_str] = {
+                                'temp_min': forecast['main']['temp_min'],
+                                'temp_max': forecast['main']['temp_max'],
+                                'weather_desc': forecast['weather'][0]['description'],
+                                'icon': forecast['weather'][0]['icon']
+                            }
+                        else:
+                            # נעדכן את הטמפרטורה המינימלית והמקסימלית ליום
+                            if forecast['main']['temp_min'] < daily_forecasts[date_str]['temp_min']:
+                                daily_forecasts[date_str]['temp_min'] = forecast['main']['temp_min']
+                            if forecast['main']['temp_max'] > daily_forecasts[date_str]['temp_max']:
+                                daily_forecasts[date_str]['temp_max'] = forecast['main']['temp_max']
 
-                            with cols[i]:
-                                st.markdown(f"**{day_of_week}**")
-                                st.image(f"https://openweathermap.org/img/wn/{icon}@2x.png", width=50)
-                                st.markdown(f"**מקס'**: {temp_max:.1f}°C")
-                                st.markdown(f"**מיני'**: {temp_min:.1f}°C")
-                                st.markdown(f"**מצב**: {weather_desc}")
+                    # הצגת הנתונים באמצעות עמודות
+                    cols = st.columns(len(daily_forecasts))
+
+                    for i, (date_str, data) in enumerate(daily_forecasts.items()):
+                        with cols[i]:
+                            st.markdown(f"**{date_str}**")
+                            st.image(f"https://openweathermap.org/img/wn/{data['icon']}@2x.png", width=50)
+                            st.markdown(f"**מקס'**: {data['temp_max']:.1f}°C")
+                            st.markdown(f"**מיני'**: {data['temp_min']:.1f}°C")
+                            st.markdown(f"**מצב**: {data['weather_desc']}")
