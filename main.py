@@ -6,6 +6,19 @@ import pytz
 import requests
 import json
 
+
+import streamlit as st
+
+# הוספת CSS לכיווניות RTL
+st.markdown("""
+<style>
+body {
+    direction: rtl;
+    text-align: right;
+}
+</style>
+""", unsafe_allow_html=True)
+
 # כותרת לממשק
 st.title("בדיקת מזג האוויר")
 
