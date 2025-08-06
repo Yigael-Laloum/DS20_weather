@@ -22,14 +22,14 @@ st.markdown(
     """,
     unsafe_allow_html=True,
 )
-st.title("בדיקת מזג האוויר")
+st.title("ברוכים הבאים לשירות החזאי העולמי")
 
 # --- קלט משתמש ---
-location = st.text_input("הזן את המיקום שלך (למשל: Tel Aviv)")
+location = st.text_input("הזינו את המיקום לבדיקת מזג האוויר (למשל: דולב / Paris)")
 
-if st.button("בדוק מזג אוויר"):
+if st.button("לחצו כאן לבדיקת מזג אוויר"):
     if not location.strip():
-        st.error("אנא הזן מיקום תקין")
+        st.error("אנא הזינו מיקום תקין")
     else:
         url = "http://api.openweathermap.org/data/2.5/weather"
         params = {"q": location, "appid": api_key, "units": "metric", "lang": "he"}
