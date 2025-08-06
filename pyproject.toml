@@ -8,7 +8,7 @@ package-mode = false  # ← העבר לפה
 
 [tool.poetry.dependencies]
 python = "^3.13"
-streamlit = "^1.47.1"
+streamlit = "^1.48.0"
 pandas = "^2.3.1"
 seaborn = "^0.13.2"
 numpy = "^2.3.2"
