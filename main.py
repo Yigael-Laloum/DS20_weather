@@ -39,6 +39,13 @@ st.markdown(
         transform: scale(0.95); /* הקטנה קלה בעת לחיצה */
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* צל קטן יותר בעת לחיצה */
     }
+    /* תיקון שבירת שורות בקפשן של התמונה */
+    .stImage > .caption {
+        white-space: nowrap; /* מונע שבירת שורות */
+        max-width: 100%; /* מבטיח שהקפשן לא יחרוג מהתמונה */
+        overflow: hidden; /* מסתיר טקסט שחורג */
+        text-overflow: ellipsis; /* מוסיף שלוש נקודות אם הטקסט ארוך מדי */
+    }
     </style>
     """,
     unsafe_allow_html=True,
@@ -72,7 +79,7 @@ if st.button("לחצו כאן לבדיקת מזג אוויר"):
                 temp = data.get("main", {}).get("temp")
                 humidity = data.get("main", {}).get("humidity")
 
-                st.write(f"**המיקום שהזנתם הוא**: {name}")
+                st.write(f"**עיר**: {name}")
                 if icon:
                     st.image(f"http://openweathermap.org/img/wn/{icon}@2x.png", width=100, caption=f"תיאור: {desc}")
 
@@ -111,7 +118,7 @@ if st.button("לחצו כאן לבדיקת מזג אוויר"):
                 fig.add_trace(
                     go.Indicator(
                         mode="gauge+number",
-                        value=humidity if humidity is not None else 0,
+                        value=humidity if temp is not None else 0,
                         number={'suffix': " %"},
                         gauge={
                             'axis': {'range': [0, 100]},
