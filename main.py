@@ -12,7 +12,7 @@ import plotly.graph_objects as go
 api_key = "053b9baa6643509be5a052798faf7f3b"
 
 # --- הגדרות ממשק קצרות ---
-st.set_page_config(page_title="בדיקת מזג האוויר", layout="centered")
+st.set_page_config(page_title="החזאי העולמי", layout="centered")
 st.markdown(
     """
     <style>
@@ -72,7 +72,7 @@ if st.button("לחצו כאן לבדיקת מזג אוויר"):
                     go.Indicator(
                         mode="gauge+number",
                         value=temp if temp is not None else 0,
-                        number={'suffix': " °C"},
+                        number={'suffix': " °C", 'valueformat': ".0f"},
                         gauge={
                             'axis': {'range': [0, 40]},
                             'bar': {'color': "orange" if temp is not None and temp > 30 else "blue"},
@@ -126,8 +126,8 @@ if st.button("לחצו כאן לבדיקת מזג אוויר"):
                 # התראות מותנות
                 if temp is not None:
                     if temp > 30:
-                        st.warning("⚠️ טמפרטורה גבוהה! היזהר/י מהחום.")
+                        st.warning("⚠️ הטמפרטורה כעת גבוהה! היזהרו מהחום.")
                     elif temp < 15:
-                        st.info("❄️ טמפרטורה נמוכה! כדאי להתלבש חם.")
+                        st.info("❄️ הטמפרטורה כעת נמוכה! כדאי להתלבש חם.")
                 if humidity is not None and humidity > 80:
-                    st.warning("💧 לחות גבוהה! ייתכן שיהיה דביק.")
+                    st.warning("💧 הלחות כעת גבוהה! ייתכן שיהיה דביק.")
