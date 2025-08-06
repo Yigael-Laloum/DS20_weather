@@ -8,67 +8,67 @@ import json
 from plotly.subplots import make_subplots
 import plotly.graph_objects as go
 
-# --- הזן כאן את מפתח ה-API שלך (או החלף במשתנה סביבה בעצמך) ---
+# --- הזן כאן את מפתח ה-API שלך ---
 api_key = "053b9baa6643509be5a052798faf7f3b"
 
-# --- הגדרות ממשק קצרות ---
+# --- הגדרות ממשק ---
 st.set_page_config(page_title="החזאי העולמי", layout="centered")
 st.markdown(
     """
     <style>
-    /* שמירה על RTL ברמה כללית */
-    html, body, [class*="css"] { direction: rtl; text-align: right; }
+    /* כיוון כתיבה מימין לשמאל */
+    html, body, [class*="css"] {
+        direction: rtl;
+    }
 
-    .stButton, .stImage { margin-top: 8px; margin-bottom: 8px; }
+    /* ממרכז את כל התוכן בדף */
+    .block-container {
+        text-align: center !important;
+    }
 
-    /* עיצוב מותאם אישית לכפתור */
+    /* עיצוב כפתור */
     .stButton > button {
-        background-color: #4CAF50; /* צבע רקע ירוק */
-        color: white; /* צבע טקסט לבן */
-        padding: 12px 24px; /* ריווח פנימי */
-        border: none; /* הסרת מסגרת */
-        border-radius: 10px; /* פינות מעוגלות */
-        font-size: 16px; /* גודל פונט */
-        font-weight: bold; /* טקסט מודגש */
-        cursor: pointer; /* סמן יד בעת ריחוף */
-        transition: background-color 0.3s ease, transform 0.2s ease; /* אנימציה למעבר צבע והגדלה */
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* צל קל */
+        background-color: #4CAF50;
+        color: white;
+        padding: 12px 24px;
+        border: none;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: background-color 0.3s ease, transform 0.2s ease;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        margin: 0 auto; /* ממרכז את הכפתור */
+        display: block;
     }
     .stButton > button:hover {
-        background-color: #45a049; /* צבע כהה יותר בעת ריחוף */
-        transform: scale(1.05); /* הגדלה קלה בעת ריחוף */
+        background-color: #45a049;
+        transform: scale(1.05);
     }
     .stButton > button:active {
-        transform: scale(0.95); /* הקטנה קלה בעת לחיצה */
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* צל קטן יותר בעת לחיצה */
+        transform: scale(0.95);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
     }
 
-    /* =============================
-       תיקון שבירת שורות בקפסשן של התמונה
-       ויישור מרכזי מתחת לאייקון
-       ============================= */
-    /* ב-Streamlit הכותרת של התמונה היא בתוך figure > figcaption */
+    /* ממרכז תמונה ותיאור */
+    .stImage > figure {
+        margin: auto;
+    }
     .stImage > figure > figcaption {
-        white-space: nowrap;        /* לא לשבור שורות */
-        overflow: hidden;           /* למנוע גלילה אופקית */
-        text-overflow: ellipsis;    /* שלוש נקודות אם הטקסט ארוך מדי */
-        text-align: center;         /* יישור מרכזי אופקי */
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        text-align: center;
         display: block;
         width: 100%;
-        direction: rtl;             /* לשמור על כיוון הטקסט בעברית */
-        font-size: 14px;            /* אפשר לשנות לפי הטעם */
-    }
-
-    /* אופציונלי: הקטנת גודל הכיתוב כדי שלא יחרוג */
-    .stImage > figure > figcaption span {
-        display: inline-block;
-        max-width: 100%;
-        vertical-align: middle;
+        direction: rtl;
+        font-size: 14px;
     }
     </style>
     """,
     unsafe_allow_html=True,
 )
+
 st.title("ברוכים הבאים לשירות החזאי העולמי")
 
 # --- קלט משתמש ---
@@ -100,22 +100,20 @@ if st.button("לחצו כאן לבדיקת מזג אוויר"):
 
                 st.write(f"**המיקום שהזנתם הוא**: {name}")
                 if icon:
-                    # השתמש ב-HTTPS לטעינת האייקון
                     st.image(f"https://openweathermap.org/img/wn/{icon}@2x.png", width=100, caption=f"תיאור: {desc}")
 
                 st.write(f"**טמפרטורה**: {temp:.1f}°C" if temp is not None else "**טמפרטורה**: —")
                 st.write(f"**לחות**: {humidity}% " if humidity is not None else "**לחות**: —")
 
-                # --- Subplots אנכיים לשני המדדים (לא יחפפו) ---
+                # --- תרשימים ---
                 fig = make_subplots(
                     rows=2,
                     cols=1,
                     subplot_titles=("טמפרטורה (°C)", "לחות (%)"),
-                    vertical_spacing=0.35,  # הגדלת המרווח בין התרשימים
+                    vertical_spacing=0.35,
                     specs=[[{"type": "domain"}], [{"type": "domain"}]]
                 )
 
-                # מד טמפרטורה
                 fig.add_trace(
                     go.Indicator(
                         mode="gauge+number",
@@ -134,7 +132,6 @@ if st.button("לחצו כאן לבדיקת מזג אוויר"):
                     row=1, col=1
                 )
 
-                # מד לחות — שים לב לתיקון: הערך תלוי ב־humidity, לא ב־temp
                 fig.add_trace(
                     go.Indicator(
                         mode="gauge+number",
@@ -153,25 +150,20 @@ if st.button("לחצו כאן לבדיקת מזג אוויר"):
                     row=2, col=1
                 )
 
-                # התאמת פריסה למרכוז הכותרת ושמירה על RTL
                 fig.update_layout(
-                    height=800,  # הגדלת גובה התרשים
-                    title_text=f"נתוני מזג אוויר ב־{name}",  # הכותרת הראשית
-                    title_x=0.5,  # מרכוז הכותרת האופקי
-                    title_y=0.95,  # הזזת הכותרת הראשית כלפי מעלה
-                    title_xanchor="center",  # וידוא שהכותרת ממורכזת
-                    margin=dict(l=50, r=50, t=120, b=50),  # הגדלת המרווח העליון
-                    font=dict(family="Arial", size=14)  # גופן תומך עברית
+                    height=800,
+                    title_text=f"נתוני מזג אוויר ב־{name}",
+                    title_x=0.5,
+                    title_y=0.95,
+                    title_xanchor="center",
+                    margin=dict(l=50, r=50, t=120, b=50),
+                    font=dict(family="Arial", size=14)
                 )
 
-                # התאמת מיקום כותרות המשנה (subplot titles)
-                fig.update_annotations(
-                    yshift=20  # הזזת כותרות המשנה כלפי מעלה
-                )
+                fig.update_annotations(yshift=20)
 
                 st.plotly_chart(fig, use_container_width=True)
 
-                # התראות מותנות
                 if temp is not None:
                     if temp > 30:
                         st.warning("⚠️ הטמפרטורה כעת גבוהה! היזהרו מהחום.")
