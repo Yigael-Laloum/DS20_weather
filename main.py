@@ -105,13 +105,15 @@ if st.button("לחצו כאן לבדיקת מזג אוויר"):
                     row=2, col=1
                 )
 
-                # התאמת פריסה להגבהת הכותרת
+                # התאמת פריסה למרכוז הכותרת ושמירה על RTL
                 fig.update_layout(
                     height=800,  # הגדלת גובה התרשים
-                    title_text=f"נתוני מזג אוויר ב־{name}",
+                    title_text=f"נתוני מזג אוויר ב־{name}",  # הכותרת הראשית
+                    title_x=0.5,  # מרכוז הכותרת האופקי
                     title_y=0.95,  # הזזת הכותרת הראשית כלפי מעלה
+                    title_xanchor="center",  # וידוא שהכותרת ממורכזת
                     margin=dict(l=50, r=50, t=120, b=50),  # הגדלת המרווח העליון
-                    font=dict(family="Arial", size=14)
+                    font=dict(family="Arial", size=14)  # גופן תומך עברית
                 )
 
                 # התאמת מיקום כותרות המשנה (subplot titles)
