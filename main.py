@@ -115,7 +115,7 @@ if st.button("לחצו כאן לבדיקת מזג אוויר"):
                 humidity = data.get("main", {}).get("humidity")
 
                 st.write(f"**המיקום שהזנתם הוא**: {name}")
-                st.write(f"**קשה לחשוב על מקום מדהים יותר מ **: {name}")
+                st.write(f"**קשה לחשוב על מיקום מדהים יותר מ-**: {name}")
                 if icon:
                     st.image(f"https://openweathermap.org/img/wn/{icon}@2x.png", width=100, caption=f"תיאור: {desc}")
 
