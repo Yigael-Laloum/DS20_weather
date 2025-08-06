@@ -16,8 +16,11 @@ st.set_page_config(page_title="החזאי העולמי", layout="centered")
 st.markdown(
     """
     <style>
+    /* שמירה על RTL ברמה כללית */
     html, body, [class*="css"] { direction: rtl; text-align: right; }
+
     .stButton, .stImage { margin-top: 8px; margin-bottom: 8px; }
+
     /* עיצוב מותאם אישית לכפתור */
     .stButton > button {
         background-color: #4CAF50; /* צבע רקע ירוק */
@@ -39,12 +42,28 @@ st.markdown(
         transform: scale(0.95); /* הקטנה קלה בעת לחיצה */
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* צל קטן יותר בעת לחיצה */
     }
-    /* תיקון שבירת שורות בקפשן של התמונה */
-    .stImage > .caption {
-        white-space: nowrap; /* מונע שבירת שורות */
-        max-width: 100%; /* מבטיח שהקפשן לא יחרוג מהתמונה */
-        overflow: hidden; /* מסתיר טקסט שחורג */
-        text-overflow: ellipsis; /* מוסיף שלוש נקודות אם הטקסט ארוך מדי */
+
+    /* =============================
+       תיקון שבירת שורות בקפסשן של התמונה
+       ויישור מרכזי מתחת לאייקון
+       ============================= */
+    /* ב-Streamlit הכותרת של התמונה היא בתוך figure > figcaption */
+    .stImage > figure > figcaption {
+        white-space: nowrap;        /* לא לשבור שורות */
+        overflow: hidden;           /* למנוע גלילה אופקית */
+        text-overflow: ellipsis;    /* שלוש נקודות אם הטקסט ארוך מדי */
+        text-align: center;         /* יישור מרכזי אופקי */
+        display: block;
+        width: 100%;
+        direction: rtl;             /* לשמור על כיוון הטקסט בעברית */
+        font-size: 14px;            /* אפשר לשנות לפי הטעם */
+    }
+
+    /* אופציונלי: הקטנת גודל הכיתוב כדי שלא יחרוג */
+    .stImage > figure > figcaption span {
+        display: inline-block;
+        max-width: 100%;
+        vertical-align: middle;
     }
     </style>
     """,
@@ -81,7 +100,8 @@ if st.button("לחצו כאן לבדיקת מזג אוויר"):
 
                 st.write(f"**המיקום שהזנתם הוא**: {name}")
                 if icon:
-                    st.image(f"http://openweathermap.org/img/wn/{icon}@2x.png", width=100, caption=f"תיאור: {desc}")
+                    # השתמש ב-HTTPS לטעינת האייקון
+                    st.image(f"https://openweathermap.org/img/wn/{icon}@2x.png", width=100, caption=f"תיאור: {desc}")
 
                 st.write(f"**טמפרטורה**: {temp:.1f}°C" if temp is not None else "**טמפרטורה**: —")
                 st.write(f"**לחות**: {humidity}% " if humidity is not None else "**לחות**: —")
@@ -114,11 +134,11 @@ if st.button("לחצו כאן לבדיקת מזג אוויר"):
                     row=1, col=1
                 )
 
-                # מד לחות
+                # מד לחות — שים לב לתיקון: הערך תלוי ב־humidity, לא ב־temp
                 fig.add_trace(
                     go.Indicator(
                         mode="gauge+number",
-                        value=humidity if temp is not None else 0,
+                        value=humidity if humidity is not None else 0,
                         number={'suffix': " %"},
                         gauge={
                             'axis': {'range': [0, 100]},
