@@ -63,7 +63,7 @@ if st.button("בדוק מזג אוויר"):
                     rows=2,
                     cols=1,
                     subplot_titles=("טמפרטורה (°C)", "לחות (%)"),
-                    vertical_spacing=0.25,
+                    vertical_spacing=0.35,  # הגדלת המרווח בין התרשימים
                     specs=[[{"type": "domain"}], [{"type": "domain"}]]
                 )
 
@@ -105,11 +105,18 @@ if st.button("בדוק מזג אוויר"):
                     row=2, col=1
                 )
 
+                # התאמת פריסה להגבהת הכותרת
                 fig.update_layout(
-                    height=700,
+                    height=800,  # הגדלת גובה התרשים
                     title_text=f"נתוני מזג אוויר ב־{name}",
-                    margin=dict(l=50, r=50, t=80, b=50),
+                    title_y=0.95,  # הזזת הכותרת הראשית כלפי מעלה
+                    margin=dict(l=50, r=50, t=120, b=50),  # הגדלת המרווח העליון
                     font=dict(family="Arial", size=14)
+                )
+
+                # התאמת מיקום כותרות המשנה (subplot titles)
+                fig.update_annotations(
+                    yshift=20  # הזזת כותרות המשנה כלפי מעלה
                 )
 
                 st.plotly_chart(fig, use_container_width=True)
