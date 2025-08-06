@@ -18,6 +18,27 @@ st.markdown(
     <style>
     html, body, [class*="css"] { direction: rtl; text-align: right; }
     .stButton, .stImage { margin-top: 8px; margin-bottom: 8px; }
+    /* עיצוב מותאם אישית לכפתור */
+    .stButton > button {
+        background-color: #4CAF50; /* צבע רקע ירוק */
+        color: white; /* צבע טקסט לבן */
+        padding: 12px 24px; /* ריווח פנימי */
+        border: none; /* הסרת מסגרת */
+        border-radius: 10px; /* פינות מעוגלות */
+        font-size: 16px; /* גודל פונט */
+        font-weight: bold; /* טקסט מודגש */
+        cursor: pointer; /* סמן יד בעת ריחוף */
+        transition: background-color 0.3s ease, transform 0.2s ease; /* אנימציה למעבר צבע והגדלה */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* צל קל */
+    }
+    .stButton > button:hover {
+        background-color: #45a049; /* צבע כהה יותר בעת ריחוף */
+        transform: scale(1.05); /* הגדלה קלה בעת ריחוף */
+    }
+    .stButton > button:active {
+        transform: scale(0.95); /* הקטנה קלה בעת לחיצה */
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* צל קטן יותר בעת לחיצה */
+    }
     </style>
     """,
     unsafe_allow_html=True,
