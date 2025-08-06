@@ -64,26 +64,43 @@ if st.button("בדוק מזג אוויר"):
                     cols=1,
                     subplot_titles=("טמפרטורה (°C)", "לחות (%)"),
                     vertical_spacing=0.25,
-                    specs=[[{"type": "domain"}],
-                           [{"type": "domain"}]]
+                    specs=[[{"type": "domain"}], [{"type": "domain"}]]
                 )
 
+                # מד טמפרטורה
                 fig.add_trace(
                     go.Indicator(
                         mode="gauge+number",
                         value=temp if temp is not None else 0,
                         number={'suffix': " °C"},
-                        gauge={...}
+                        gauge={
+                            'axis': {'range': [0, 40]},
+                            'bar': {'color': "orange" if temp is not None and temp > 30 else "blue"},
+                            'steps': [
+                                {'range': [0, 15], 'color': "lightblue"},
+                                {'range': [15, 25], 'color': "lightgreen"},
+                                {'range': [25, 40], 'color': "lightcoral"}
+                            ]
+                        }
                     ),
                     row=1, col=1
                 )
 
+                # מד לחות
                 fig.add_trace(
                     go.Indicator(
                         mode="gauge+number",
                         value=humidity if humidity is not None else 0,
                         number={'suffix': " %"},
-                        gauge={...}
+                        gauge={
+                            'axis': {'range': [0, 100]},
+                            'bar': {'color': "green" if humidity is not None and humidity < 70 else "red"},
+                            'steps': [
+                                {'range': [0, 50], 'color': "lightyellow"},
+                                {'range': [50, 80], 'color': "lightblue"},
+                                {'range': [80, 100], 'color': "lightgray"}
+                            ]
+                        }
                     ),
                     row=2, col=1
                 )
