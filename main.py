@@ -87,6 +87,30 @@ st.markdown(
 
 st.title("ברוכים הבאים לשירות החזאי העולמי")
 
+
+# --- פונקציה לקבלת תחזית שבועית ---
+def get_weekly_forecast(lat, lon, api_key):
+    """
+    מבצע קריאה ל-API של OpenWeatherMap כדי לקבל תחזית שבועית.
+    """
+    url = "https://api.openweathermap.org/data/2.5/onecall"
+    params = {
+        "lat": lat,
+        "lon": lon,
+        "appid": api_key,
+        "exclude": "current,minutely,hourly,alerts",
+        "units": "metric",
+        "lang": "he"
+    }
+    try:
+        response = requests.get(url, params=params, timeout=10)
+        response.raise_for_status()
+        return response.json()
+    except requests.RequestException as e:
+        st.error(f"שגיאה בקבלת התחזית השבועית: {e}")
+        return None
+
+
 # --- קלט משתמש ---
 location = st.text_input("הזינו את המיקום לבדיקת מזג האוויר (למשל: דולב / Paris)")
 
@@ -188,3 +212,31 @@ if st.button("לחצו כאן לבדיקת מזג אוויר"):
                         st.info("❄️ הטמפרטורה כעת נמוכה! כדאי להתלבש חם.")
                 if humidity is not None and humidity > 80:
                     st.warning("💧 הלחות כעת גבוהה! ייתכן שיהיה דביק.")
+
+                # --- תחזית לשבוע הקרוב ---
+                if "coord" in data:
+                    lat = data["coord"]["lat"]
+                    lon = data["coord"]["lon"]
+                    weekly_data = get_weekly_forecast(lat, lon, api_key)
+
+                    if weekly_data and "daily" in weekly_data:
+                        st.markdown("<hr>", unsafe_allow_html=True)
+                        st.markdown("## תחזית לשבוע הקרוב")
+
+                        daily_forecasts = weekly_data["daily"]
+                        cols = st.columns(len(daily_forecasts))
+
+                        for i, day in enumerate(daily_forecasts):
+                            dt_object = dt.datetime.fromtimestamp(day['dt'])
+                            day_of_week = dt_object.strftime('%A')
+                            temp_min = day['temp']['min']
+                            temp_max = day['temp']['max']
+                            weather_desc = day['weather'][0]['description']
+                            icon = day['weather'][0]['icon']
+
+                            with cols[i]:
+                                st.markdown(f"**{day_of_week}**")
+                                st.image(f"https://openweathermap.org/img/wn/{icon}@2x.png", width=50)
+                                st.markdown(f"**מקס'**: {temp_max:.1f}°C")
+                                st.markdown(f"**מיני'**: {temp_min:.1f}°C")
+                                st.markdown(f"**מצב**: {weather_desc}")
