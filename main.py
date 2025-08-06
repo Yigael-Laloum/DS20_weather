@@ -16,7 +16,7 @@ st.set_page_config(page_title="החזאי העולמי", layout="centered")
 st.markdown(
     """
     <style>
-    /* כיוון כתיבה מימין לשמאל */
+    /* כיוון כתיבה מימין לשמאל (עברית) */
     html, body, [class*="css"] {
         direction: rtl;
     }
@@ -26,7 +26,7 @@ st.markdown(
         text-align: center !important;
     }
 
-    /* עיצוב כפתור */
+    /* עיצוב כפתור ומרכזתו */
     .stButton > button {
         background-color: #4CAF50;
         color: white;
@@ -38,7 +38,7 @@ st.markdown(
         cursor: pointer;
         transition: background-color 0.3s ease, transform 0.2s ease;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        margin: 0 auto; /* ממרכז את הכפתור */
+        margin: 0 auto;
         display: block;
     }
     .stButton > button:hover {
@@ -50,19 +50,35 @@ st.markdown(
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
     }
 
-    /* ממרכז תמונה ותיאור */
+    /* ממרכז תמונה ותיאור שלה */
+    .stImage {
+        display: block;
+        margin: 0 auto;
+    }
     .stImage > figure {
-        margin: auto;
+        margin: 0 auto;
+        text-align: center !important; /* <-- ממרכז את התמונה והכיתוב */
+        direction: rtl;
+    }
+    .stImage > figure > img {
+        display: inline-block;
+        margin: 0 auto;
     }
     .stImage > figure > figcaption {
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
-        text-align: center;
+        text-align: center !important; /* <-- מבטיח כיתוב ממורכז */
         display: block;
         width: 100%;
         direction: rtl;
         font-size: 14px;
+    }
+
+    /* אופציונלי: הקטנת ריווח אנכי כדי שיהיה נקי יותר */
+    .stImage, .stButton, .stMarkdown {
+        margin-top: 8px;
+        margin-bottom: 8px;
     }
     </style>
     """,
